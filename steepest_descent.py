@@ -57,7 +57,7 @@ for rounds in range(rounds_total):
     for i in range(M):
         current_cost = current_cost + (0.5 / M) * pow((t2 * pow(x[i], 2) + t1 * x[i] + t0 - y[i]),2)
     # calculate the value of the cost function at a candidate jump position
-    # if the value of the cost function increases we reject the candidate and halve the jump size
+    # if the value of the cost function increases we reject the candidate and reduce the jump size
     # this will be done until a satisfactory candidate jump position is discovered
     while are_we_satisfied == False:
         value_of_cost = 0.00
@@ -66,7 +66,7 @@ for rounds in range(rounds_total):
         # satisfactory value. we can continue
         if current_cost > value_of_cost:
             are_we_satisfied = True
-        # unsatisfactory value, we halve the step and recalculate the cost
+        # unsatisfactory value, we reduce the step and recalculate the cost
         else:
             rate = rate * 0.9
     # make the step
