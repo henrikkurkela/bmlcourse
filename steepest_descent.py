@@ -30,7 +30,9 @@ t2 = np.random.randn(1)
 t0_adjusted_values = []
 t1_adjusted_values = []
 t2_adjusted_values = []
-rounds_total = 500
+rounds_total = 10000
+acceptable_fit = 0.002
+ready_to_report = False
 rate = 1.00
 for rounds in range(rounds_total):
     grad_t0 = 0.00
@@ -59,16 +61,21 @@ for rounds in range(rounds_total):
     # calculate the value of the cost function at a candidate jump position
     # if the value of the cost function increases we reject the candidate and reduce the jump size
     # this will be done until a satisfactory candidate jump position is discovered
+    # or the maximum value for acceptable fit is reached
     while are_we_satisfied == False:
         value_of_cost = 0.00
         for i in range(M):
             value_of_cost = value_of_cost + (0.5 / M) * pow(((t2 - rate * grad_t2) * pow(x[i], 2) + (t1 - rate * grad_t1) * x[i] + (t0 - rate * grad_t0) - y[i]), 2)
+        # acceptable fit. we can stop iterating and report findings
+        if value_of_cost < acceptable_fit:
+            are_we_satisfied = True
+            ready_to_report = True
         # satisfactory value. we can continue
-        if current_cost > value_of_cost:
+        elif current_cost > value_of_cost:
             are_we_satisfied = True
         # unsatisfactory value, we reduce the step and recalculate the cost
         else:
-            rate = rate * 0.9
+            rate = rate * 0.1
     # make the step
     t0 = t0 - rate * grad_t0
     t1 = t1 - rate * grad_t1
@@ -77,11 +84,14 @@ for rounds in range(rounds_total):
     t0_adjusted_values.append(t0)
     t1_adjusted_values.append(t1)
     t2_adjusted_values.append(t2)
-    # and finally lets visualize results
-    xmin = np.min(x)
-    xmax = np.max(x)
-    x1 = np.linspace(xmin,xmax,100)
-    h = t2*x1*x1 + t1*x1 + t0
+    # if satisfactory fit is reached we can stop iterating
+    if ready_to_report == True:
+        break
+# and finally lets visualize results
+xmin = np.min(x)
+xmax = np.max(x)
+x1 = np.linspace(xmin,xmax,100)
+h = t2*x1*x1 + t1*x1 + t0
 
 plt.figure(1)
 plt.clf()
